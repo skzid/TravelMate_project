@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="mb-4">
+    <div class="d-flex align-items-start justify-content-between gap-3 flex-wrap">
+        <div>
+            <h1 class="h2">Дневник путешествий</h1>
+            <p class="text-muted mb-0">
+                Добавляйте города, фотографии и заметки. Координаты и страна определяются через API геокодера.
+            </p>
+        </div>
+        {% if current_user.is_authenticated %}
+            <a class="btn btn-primary" href="{{ url_for('add_trip') }}">Добавить место</a>
+        {% endif %}
+    </div>
+</section>
+
+{% if not trips %}
+    <div class="alert alert-info">
+        Пока нет записей. Зарегистрируйтесь и добавьте первое место.
+    </div>
+{% endif %}
+
+<div class="row g-3">
+    {% for item in trips %}
+        <div class="col-md-6 col-xl-4">
+            <article class="card h-100 shadow-sm">
+                {% if item.photo_filename %}
+                    <img class="trip-photo" src="{{ url_for('static', filename='uploads/' + item.photo_filename) }}" alt="{{ item.city }}">
+                {% else %}
+                    <div class="trip-photo trip-photo-placeholder">TravelMate</div>
+                {% endif %}
+                <div class="card-body">
+                    <div class="d-flex justify-content-between gap-2">
+                        <h2 class="h5">{{ item.title }}</h2>
+                        {% if not item.is_public %}
+                            <span class="badge text-bg-secondary">личное</span>
+                        {% endif %}
+                    </div>
+                    <p class="mb-1"><strong>{{ item.city }}</strong>{% if item.country %}, {{ item.country }}{% endif %}</p>
+                    <p class="text-muted small mb-2">
+                        {% if item.latitude and item.longitude %}
+                            {{ "%.4f"|format(item.latitude) }}, {{ "%.4f"|format(item.longitude) }}
+                        {% else %}
+                            координаты не определены
+                        {% endif %}
+                    </p>
+                    <p>{{ item.description }}</p>
+                </div>
+                <div class="card-footer bg-white">
+                    <div class="d-flex justify-content-between align-items-center gap-2">
+                        <span class="text-muted small">
+                            {{ item.user.name }} · {{ item.created_date.strftime("%d.%m.%Y") }}
+                        </span>
+                        {% if current_user.is_authenticated and current_user.id == item.user_id %}
+                            <span>
+                                <a class="btn btn-sm btn-outline-primary" href="{{ url_for('edit_trip', trip_id=item.id) }}">Изменить</a>
+                                <a class="btn btn-sm btn-outline-danger" href="{{ url_for('delete_trip', trip_id=item.id) }}">Удалить</a>
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </article>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

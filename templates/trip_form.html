@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="form-page wide">
+    <h1 class="h3">{{ title }}</h1>
+    <form method="post" enctype="multipart/form-data" novalidate>
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.title.label }}<br>
+            {{ form.title(class="form-control") }}
+            {% for error in form.title.errors %}<span class="text-danger">{{ error }}</span>{% endfor %}
+        </p>
+        <p>
+            {{ form.city.label }}<br>
+            {{ form.city(class="form-control", placeholder="Например: Москва") }}
+            {% for error in form.city.errors %}<span class="text-danger">{{ error }}</span>{% endfor %}
+        </p>
+        <p>
+            {{ form.description.label }}<br>
+            {{ form.description(class="form-control", rows="5") }}
+            {% for error in form.description.errors %}<span class="text-danger">{{ error }}</span>{% endfor %}
+        </p>
+        <p>
+            {{ form.photo.label }}<br>
+            {{ form.photo(class="form-control") }}
+            {% for error in form.photo.errors %}<span class="text-danger">{{ error }}</span>{% endfor %}
+        </p>
+        <p>{{ form.is_public() }} {{ form.is_public.label }}</p>
+        {{ form.submit(value=button_text, type="submit", class="btn btn-primary") }}
+        <a class="btn btn-outline-secondary" href="{{ url_for('index') }}">Отмена</a>
+    </form>
+</div>
+{% endblock %}
